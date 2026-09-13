@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFC - النسخة الخاصة (لوحة تحكم المدير طه)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --card-bg: #121824;
+            --accent-gold: #f39c12;
+            --accent-blue: #00d2ff;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+            --text-main: #ffffff;
+            --text-sub: #a0aec0;
+            --border-color: #2d3748;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background: rgba(18, 24, 36, 0.95); backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #1a2332;
+        }
+
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center; padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 22px; font-weight: 900;
+            background: linear-gradient(45deg, var(--accent-gold), var(--accent-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .admin-toggle-btn {
+            background: var(--accent-gold); color: #000; font-weight: bold;
+            padding: 8px 16px; border-radius: 20px; border: none; cursor: pointer; transition: 0.2s;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+        .section-title {
+            text-align: center; font-size: 1.6rem; margin: 30px 0 20px;
+            color: var(--accent-gold); display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: #151d2a; border: 2px solid var(--accent-gold);
+            border-radius: 12px; padding: 25px; margin-bottom: 40px;
+        }
+
+        .form-group { margin-bottom: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        input, select {
+            background: #182030; border: 1px solid var(--border-color);
+            color: #fff; padding: 8px 12px; border-radius: 8px; flex: 1; min-width: 110px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-gold), #e67e22);
+            color: #000; border: none; padding: 8px 16px; border-radius: 8px;
+            font-weight: bold; cursor: pointer;
+        }
+        .btn-green { background: linear-gradient(45deg, #2ecc71, #27ae60); color: #fff; }
+
+        /* Points Tracker */
+        .points-box {
+            background: linear-gradient(135deg, #182030, #121824);
+            border: 2px solid var(--accent-gold); border-radius: 12px;
+            padding: 20px; text-align: center; margin-bottom: 30px;
+        }
+        .points-val { font-size: 2.8rem; font-weight: 900; color: var(--accent-gold); }
+
+        /* Fights Grid */
+        .fights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .fight-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px; text-align: center;
+        }
+        .fight-title { color: var(--accent-blue); font-size: 0.9rem; font-weight: bold; margin-bottom: 12px; }
+
+        .prediction-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .predict-btn {
+            flex: 1; padding: 10px; border: 1px solid var(--border-color);
+            background: #182030; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold;
+        }
+        .predict-btn.selected { background: var(--accent-gold); color: #000; }
+
+        /* Table */
+        .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; text-align: center; background: var(--card-bg); }
+        th, td { padding: 12px 10px; border-bottom: 1px solid var(--border-color); }
+        th { background: #182030; color: var(--accent-gold); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo"><i class="fa-solid fa-user-shield"></i> SFC ADMIN - النسخة الخاصة</div>
+            <button class="admin-toggle-btn" onclick="toggleAdminPanel()">لوحة التحكم (المدير طه)</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- لوحة التحكم الإدارية -->
+        <div class="admin-panel" id="adminPanel">
+            <h2 style="color: var(--accent-gold); margin-bottom: 15px;"><i class="fa-solid fa-sliders"></i> إدارة البطولة ورصيد المقاتلين</h2>
+            
+            <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--accent-blue);">1. إضافة نزال جديد:</h3>
+            <div class="form-group">
+                <input type="text" id="groupName" placeholder="اسم المجموعة">
+                <input type="text" id="fighter1" placeholder="المقاتل الأول">
+                <input type="text" id="fighter2" placeholder="المقاتل الثاني">
+                <button class="btn" onclick="addCustomFight()">إضافة النزال</button>
+            </div>
+
+            <h3 style="font-size: 1rem; margin-top: 15px; margin-bottom: 8px; color: var(--accent-blue);">2. اعتماد نتائج النزالات (+5 نقاط):</h3>
+            <div id="adminFightsControl"></div>
+
+            <h3 style="font-size: 1rem; margin-top: 20px; margin-bottom: 8px; color: var(--accent-blue);">3. تعديل السجل المباشر لجميع اللاعبين الـ 11:</h3>
+            <div id="adminFightersStatsControl"></div>
+        </div>
+
+        <div class="points-box">
+            <h3>نقاط التوقع الخاصة بالمشرف</h3>
+            <div class="points-val" id="myPoints">0</div>
+            <p>كل توقع صحيح يمنحك +5 نقاط في النسخة الخاصة</p>
+        </div>
+
+        <h2 class="section-title"><i class="fa-solid fa-fire"></i> النزالات المتاحة</h2>
+        <div class="fights-grid" id="fightsContainer"></div>
+
+        <h2 class="section-title"><i class="fa-solid fa-trophy"></i> السجل الشامل لجميع المقاتلين الـ 11 (SFC Leaderboard)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم المقاتل</th>
+                        <th>لعب</th>
+                        <th>فاز</th>
+                        <th>تعادل</th>
+                        <th>خسر</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // السجل المحدث بالكامل
+        let defaultFighters = [
+            { name: 'طه (البطل)', wins: 9, draws: 0, losses: 0 },
+            { name: 'فارس', wins: 6, draws: 0, losses: 2 },
+            { name: 'فادي', wins: 4, draws: 0, losses: 3 },
+            { name: 'محمد', wins: 4, draws: 0, losses: 4 },
+            { name: 'ياسين', wins: 2, draws: 0, losses: 1 },
+            { name: 'عبد المؤمن', wins: 1, draws: 0, losses: 3 },
+            { name: 'فاروق', wins: 1, draws: 0, losses: 6 },
+            { name: 'عبد الرؤوف', wins: 0, draws: 0, losses: 1 },
+            { name: 'فراس', wins: 0, draws: 0, losses: 1 },
+            { name: 'عبد الرحمن', wins: 0, draws: 0, losses: 0 },
+            { name: 'أحمد', wins: 0, draws: 0, losses: 0 }
+        ];
+
+        let fighters = JSON.parse(localStorage.getItem('sfc_private_fighters')) || defaultFighters;
+
+        let fights = JSON.parse(localStorage.getItem('sfc_private_fights')) || [
+            { id: 1, group: 'GOLD GROUP - نزال اللقب', f1: 'طه (البطل)', f2: 'فارس', winner: null },
+            { id: 2, group: 'HEAVYWEIGHT', f1: 'عبد الرحمن', f2: 'أحمد', winner: null },
+            { id: 3, group: 'MATCHDAY', f1: 'عبد الرؤوف', f2: 'فراس', winner: null },
+            { id: 4, group: 'CO-MAIN EVENT', f1: 'فارس', f2: 'ياسين', winner: null }
+        ];
+
+        let userPoints = parseInt(localStorage.getItem('sfc_private_user_pts')) || 0;
+        document.getElementById('myPoints').innerText = userPoints;
+
+        function renderAll() {
+            renderFights();
+            renderLeaderboard();
+            renderAdminStatsControl();
+        }
+
+        function renderFights() {
+            const container = document.getElementById('fightsContainer');
+            const adminControl = document.getElementById('adminFightsControl');
+            container.innerHTML = '';
+            adminControl.innerHTML = '';
+
+            fights.forEach(fight => {
+                let p1Selected = localStorage.getItem('sfc_priv_pred_' + fight.id) === fight.f1 ? 'selected' : '';
+                let p2Selected = localStorage.getItem('sfc_priv_pred_' + fight.id) === fight.f2 ? 'selected' : '';
+
+                container.innerHTML += `
+                    <div class="fight-card">
+                        <div class="fight-title">${fight.group}</div>
+                        <p><strong>${fight.f1}</strong> VS <strong>${fight.f2}</strong></p>
+                        ${fight.winner ? `<p style="color:var(--accent-green); font-weight:bold; margin-top:8px;">الفائز: ${fight.winner}</p>` : ''}
+                        <div class="prediction-buttons">
+                            <button class="predict-btn ${p1Selected}" onclick="makePrediction(${fight.id}, '${fight.f1}')">${fight.f1}</button>
+                            <button class="predict-btn ${p2Selected}" onclick="makePrediction(${fight.id}, '${fight.f2}')">${fight.f2}</button>
+                        </div>
+                    </div>
+                `;
+
+                adminControl.innerHTML += `
+                    <div class="form-group" style="background:#182030; padding:8px; border-radius:8px;">
+                        <span style="flex:1;">${fight.group}: <strong>${fight.f1}</strong> ضد <strong>${fight.f2}</strong></span>
+                        <select id="winnerSelect_${fight.id}">
+                            <option value="${fight.f1}">فوز ${fight.f1}</option>
+                            <option value="${fight.f2}">فوز ${fight.f2}</option>
+                            <option value="تعادل">تعادل الطرفين</option>
+                        </select>
+                        <button class="btn btn-green" onclick="setFightWinner(${fight.id})">اعتماد</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderLeaderboard() {
+            const body = document.getElementById('leaderboardBody');
+            body.innerHTML = '';
+            fighters.forEach((f, idx) => {
+                let played = f.wins + f.draws + f.losses;
+                body.innerHTML += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><strong>${f.name}</strong></td>
+                        <td><span style="color:var(--accent-blue); font-weight:bold;">${played}</span></td>
+                        <td><span style="color:var(--accent-green); font-weight:bold;">${f.wins}</span></td>
+                        <td><span style="color:var(--accent-gold); font-weight:bold;">${f.draws}</span></td>
+                        <td><span style="color:var(--accent-red); font-weight:bold;">${f.losses}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminStatsControl() {
+            const ctrl = document.getElementById('adminFightersStatsControl');
+            ctrl.innerHTML = '';
+            fighters.forEach((f, idx) => {
+                ctrl.innerHTML += `
+                    <div class="form-group" style="background:#182030; padding:8px; border-radius:8px;">
+                        <strong style="width:140px; color:var(--accent-gold);">${f.name}</strong>
+                        <span>فاز: <input type="number" id="wins_${idx}" value="${f.wins}" style="width:55px;"></span>
+                        <span>تعادل: <input type="number" id="draws_${idx}" value="${f.draws}" style="width:55px;"></span>
+                        <span>خسر: <input type="number" id="losses_${idx}" value="${f.losses}" style="width:55px;"></span>
+                        <button class="btn" onclick="updateFighterStat(${idx})">تعديل</button>
+                    </div>
+                `;
+            });
+        }
+
+        function updateFighterStat(idx) {
+            fighters[idx].wins = parseInt(document.getElementById(`wins_${idx}`).value) || 0;
+            fighters[idx].draws = parseInt(document.getElementById(`draws_${idx}`).value) || 0;
+            fighters[idx].losses = parseInt(document.getElementById(`losses_${idx}`).value) || 0;
+
+            localStorage.setItem('sfc_private_fighters', JSON.stringify(fighters));
+            alert('تم تحديث بيانات ' + fighters[idx].name);
+            renderAll();
+        }
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function makePrediction(fightId, fighter) {
+            localStorage.setItem('sfc_priv_pred_' + fightId, fighter);
+            alert('تم حفظ توقعك لـ ' + fighter);
+            renderAll();
+        }
+
+        function addCustomFight() {
+            const group = document.getElementById('groupName').value || 'نزال جديد';
+            const f1 = document.getElementById('fighter1').value;
+            const f2 = document.getElementById('fighter2').value;
+
+            if(!f1 || !f2) { alert('يرجى كتابة أسماء المقاتلين'); return; }
+
+            fights.push({ id: Date.now(), group: group, f1: f1, f2: f2, winner: null });
+            localStorage.setItem('sfc_private_fights', JSON.stringify(fights));
+            alert('تمت إضافة المباراة!');
+            renderAll();
+        }
+
+        function setFightWinner(fightId) {
+            const resultSelect = document.getElementById('winnerSelect_' + fightId).value;
+            let fight = fights.find(f => f.id === fightId);
+            fight.winner = resultSelect;
+            localStorage.setItem('sfc_private_fights', JSON.stringify(fights));
+
+            let userPred = localStorage.getItem('sfc_priv_pred_' + fightId);
+            if(userPred && userPred === resultSelect) {
+                userPoints += 5;
+                localStorage.setItem('sfc_private_user_pts', userPoints);
+                document.getElementById('myPoints').innerText = userPoints;
+                alert('توقع صحيح! تمت إضافة +5 نقاط!');
+            } else {
+                alert('تم اعتماد النتيجة: ' + resultSelect);
+            }
+            renderAll();
+        }
+
+        renderAll();
+    </script>
+</body>
+</html>
